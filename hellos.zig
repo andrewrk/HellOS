@@ -1,6 +1,6 @@
 const builtin = @import("builtin");
 
-const MultiBoot = packed struct.{
+const MultiBoot = packed struct {
     magic: i32,
     flags: i32,
     checksum: i32,
@@ -11,7 +11,7 @@ const MEMINFO = 1 << 1;
 const MAGIC = 0x1BADB002;
 const FLAGS = ALIGN|MEMINFO;
 
-export var multiboot align(4) section(".multiboot") = MultiBoot.{
+export var multiboot align(4) section(".multiboot") = MultiBoot {
     .magic = MAGIC,
     .flags = FLAGS,
     .checksum = -(MAGIC + FLAGS),
@@ -67,7 +67,7 @@ fn vga_entry(uc: u8, color: u8) u16 {
 const VGA_WIDTH = 80;
 const VGA_HEIGHT = 25;
 
-const terminal = struct.{
+const terminal = struct {
     var row = usize(0);
     var column = usize(0);
     var color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
