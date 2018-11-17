@@ -9,15 +9,15 @@ const MultiBoot = packed struct {
 const ALIGN = 1 << 0;
 const MEMINFO = 1 << 1;
 const MAGIC = 0x1BADB002;
-const FLAGS = ALIGN|MEMINFO;
+const FLAGS = ALIGN | MEMINFO;
 
-export var multiboot align(4) section(".multiboot") = MultiBoot {
+export var multiboot align(4) linksection(".multiboot") = MultiBoot{
     .magic = MAGIC,
     .flags = FLAGS,
     .checksum = -(MAGIC + FLAGS),
 };
 
-export var stack_bytes: [16 * 1024]u8 align(16) section(".bss") = undefined;
+export var stack_bytes: [16 * 1024]u8 align(16) linksection(".bss") = undefined;
 const stack_bytes_slice = stack_bytes[0..];
 
 export nakedcc fn _start() noreturn {
@@ -55,15 +55,15 @@ const VGA_COLOR_LIGHT_RED = 12;
 const VGA_COLOR_LIGHT_MAGENTA = 13;
 const VGA_COLOR_LIGHT_BROWN = 14;
 const VGA_COLOR_WHITE = 15;
- 
+
 fn vga_entry_color(fg: VgaColor, bg: VgaColor) u8 {
     return fg | (bg << 4);
 }
- 
+
 fn vga_entry(uc: u8, color: u8) u16 {
     return u16(uc) | (u16(color) << 8);
 }
- 
+
 const VGA_WIDTH = 80;
 const VGA_HEIGHT = 25;
 
@@ -83,16 +83,16 @@ const terminal = struct {
             }
         }
     }
-    
+
     fn setColor(new_color: u8) void {
         color = new_color;
     }
-    
+
     fn putCharAt(c: u8, new_color: u8, x: usize, y: usize) void {
         const index = y * VGA_WIDTH + x;
         buffer[index] = vga_entry(c, new_color);
     }
-    
+
     fn putChar(c: u8) void {
         putCharAt(c, color, column, row);
         column += 1;
@@ -103,8 +103,9 @@ const terminal = struct {
                 row = 0;
         }
     }
-    
+
     fn write(data: []const u8) void {
-        for (data) |c| putChar(c);
+        for (data) |c|
+            putChar(c);
     }
 };
