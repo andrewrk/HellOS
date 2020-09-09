@@ -20,8 +20,9 @@ export var multiboot align(4) linksection(".multiboot") = MultiBoot{
 export var stack_bytes: [16 * 1024]u8 align(16) linksection(".bss") = undefined;
 const stack_bytes_slice = stack_bytes[0..];
 
-export nakedcc fn _start() noreturn {
-    @newStackCall(stack_bytes_slice, kmain);
+export fn _start() callconv(.Naked) noreturn {
+    @call(.{ .stack = stack_bytes_slice }, kmain, .{});
+
     while (true) {}
 }
 
@@ -34,7 +35,7 @@ pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn
 
 fn kmain() void {
     terminal.initialize();
-    terminal.write("Hello, kernel World!");
+    terminal.write("Hello, Kernel World from Zig 0.6.0!");
 }
 
 // Hardware text mode color constants
@@ -61,23 +62,26 @@ fn vga_entry_color(fg: VgaColor, bg: VgaColor) u8 {
 }
 
 fn vga_entry(uc: u8, color: u8) u16 {
-    return u16(uc) | (u16(color) << 8);
+    var c: u16 = color;
+
+    return uc | (c << 8);
 }
 
 const VGA_WIDTH = 80;
 const VGA_HEIGHT = 25;
 
 const terminal = struct {
-    var row = usize(0);
-    var column = usize(0);
+    var row: usize = 0;
+    var column: usize = 0;
+
     var color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
 
     const buffer = @intToPtr([*]volatile u16, 0xB8000);
 
     fn initialize() void {
-        var y = usize(0);
+        var y: usize = 0;
         while (y < VGA_HEIGHT) : (y += 1) {
-            var x = usize(0);
+            var x: usize = 0;
             while (x < VGA_WIDTH) : (x += 1) {
                 putCharAt(' ', color, x, y);
             }
