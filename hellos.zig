@@ -35,7 +35,7 @@ pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn
 
 fn kmain() void {
     terminal.initialize();
-    terminal.write("Hello, Kernel World from Zig 0.6.0!");
+    terminal.write("Hello, Kernel World from Zig 0.7.1!");
 }
 
 // Hardware text mode color constants
