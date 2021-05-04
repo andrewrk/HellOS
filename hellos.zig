@@ -1,3 +1,4 @@
+const std = @import("std");
 const builtin = @import("builtin");
 
 const MultiBoot = packed struct {
@@ -34,8 +35,10 @@ pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn
 }
 
 fn kmain() void {
+    const message = std.fmt.comptimePrint("Hello Kernel World from Zig {}!", .{builtin.zig_version});
+
     terminal.initialize();
-    terminal.write("Hello, Kernel World from Zig 0.7.1!");
+    terminal.write(message);
 }
 
 // Hardware text mode color constants
