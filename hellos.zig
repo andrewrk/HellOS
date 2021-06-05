@@ -1,4 +1,4 @@
-const builtin = @import("builtin");
+const std = @import("std");
 
 const MultiBoot = packed struct {
     magic: i32,
@@ -26,7 +26,7 @@ export fn _start() callconv(.Naked) noreturn {
     while (true) {}
 }
 
-pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn {
+pub fn panic(msg: []const u8, error_return_trace: ?*std.builtin.StackTrace) noreturn {
     @setCold(true);
     terminal.write("KERNEL PANIC: ");
     terminal.write(msg);
@@ -35,7 +35,7 @@ pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn
 
 fn kmain() void {
     terminal.initialize();
-    terminal.write("Hello, Kernel World from Zig 0.7.1!");
+    terminal.write("Hello, Kernel World from Zig 0.8.0!");
 }
 
 // Hardware text mode color constants
