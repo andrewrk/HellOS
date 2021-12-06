@@ -1,4 +1,4 @@
-const builtin = @import("builtin");
+const builtin = @import("std").builtin;
 
 const MultiBoot = packed struct {
     magic: i32,
@@ -27,6 +27,7 @@ export fn _start() callconv(.Naked) noreturn {
 }
 
 pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn {
+    _ = error_return_trace; // keep zig compiler happy with unused parameter
     @setCold(true);
     terminal.write("KERNEL PANIC: ");
     terminal.write(msg);
