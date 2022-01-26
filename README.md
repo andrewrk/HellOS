@@ -2,6 +2,8 @@
 
 Bare bones "hello world" i386 kernel written in [Zig](https://ziglang.org/).
 
+[Video of me live coding it](https://vimeo.com/483928663).
+
 ## Building
 
 ```
