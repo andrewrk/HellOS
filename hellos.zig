@@ -1,6 +1,7 @@
-const builtin = @import("builtin");
+const std = @import("std");
+const builtin = std.builtin;
 
-const MultiBoot = packed struct {
+const MultiBoot = extern struct {
     magic: i32,
     flags: i32,
     checksum: i32,
@@ -17,16 +18,15 @@ export var multiboot align(4) linksection(".multiboot") = MultiBoot{
     .checksum = -(MAGIC + FLAGS),
 };
 
-export var stack_bytes: [16 * 1024]u8 align(16) linksection(".bss") = undefined;
-const stack_bytes_slice = stack_bytes[0..];
-
 export fn _start() callconv(.Naked) noreturn {
-    @call(.{ .stack = stack_bytes_slice }, kmain, .{});
+    @call(.{}, kmain, .{});
 
     while (true) {}
 }
 
-pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn {
+pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace, siz: ?usize) noreturn {
+    _ = error_return_trace; // keep zig compiler happy with unused parameter
+    _ = siz;
     @setCold(true);
     terminal.write("KERNEL PANIC: ");
     terminal.write(msg);
@@ -35,7 +35,7 @@ pub fn panic(msg: []const u8, error_return_trace: ?*builtin.StackTrace) noreturn
 
 fn kmain() void {
     terminal.initialize();
-    terminal.write("Hello, Kernel World from Zig 0.7.1!");
+    terminal.write("Hello, Kernel World from Zig 0.10.1!");
 }
 
 // Hardware text mode color constants
@@ -74,7 +74,7 @@ const terminal = struct {
     var row: usize = 0;
     var column: usize = 0;
 
-    var color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    var color = vga_entry_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
 
     const buffer = @intToPtr([*]volatile u16, 0xB8000);
 
